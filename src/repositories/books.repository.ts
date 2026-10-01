@@ -13,11 +13,13 @@ export async function BookFindAll ():Promise<Book[] | null> {
     return resBooks;
 }
 // { where: { available: true } }
-// { where: { available: false } }
-
-
+// { where: { available: false } } 
 
 export async function BookCreateFormat (titleReq:string, yearReq:number, author_idReq:number){
     const newBook = await BookModel.create({ title: titleReq, year: yearReq, author_id: author_idReq });    
     return (newBook);
+}
+
+export async function BookDelete (id:number) {
+    await BookModel.destroy({ where: { id: id} });
 }

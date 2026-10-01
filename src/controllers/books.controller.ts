@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { BookFindById } from "../repositories/books.repository.ts";
-import { createBook, getAll, getById } from "../services/books.services.ts";
+import { createBook, getAll, getById, remove } from "../services/books.services.ts";
 
 export async function getBooks(req: Request, res: Response) {
     const { id } = req.params;
@@ -45,5 +45,24 @@ export async function PostBook(req: Request, res:Response) {
                 return res.status(201).json(newBookData);
             } 
         }
+}
+
+export async function DeleteBook(req: Request, res: Response) {
+    const { id } = req.params;
+    const bookId = Number(id)
+    
+    if (Number.isNaN(bookId)) {
+        res.status(400).json({ "error": "ID is not a number" })
+        return;
+    } 
+    
+    const response = await remove(bookId);
+    if (response === "BOOK_NOT_FOUND"){
+        res.status(404).json({ "error": "BOOK_NOT_FOUND" })
+        return;
+    } else {
+        res.status(204).send({response});
+        return; 
+    }
 }
 

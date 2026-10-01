@@ -19,3 +19,13 @@ export async function createBook(titleReq:string, yearReq:number, author_idReq:n
     const newBook = await BooksRepository.BookCreateFormat(titleReq, yearReq, author_idReq);
     return newBook;
 }
+
+
+export async function remove(id: number): Promise<"DELETED" | "BOOK_NOT_FOUND" > {
+  const book = await BooksRepository.BookFindById(id);
+  if (!book) return "BOOK_NOT_FOUND";
+
+  await BooksRepository.BookDelete(id);
+  
+  return "DELETED";
+}

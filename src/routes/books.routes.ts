@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { BookFindAll, BookFindById } from "../repositories/books.repository.ts";
-import { getBooks, PostBook } from "../controllers/books.controller.ts";
+import { DeleteBook, getBooks, PostBook } from "../controllers/books.controller.ts";
 import { title } from "process";
 
 export const routerBooks = Router();
@@ -19,4 +19,6 @@ routerBooks.post('/', async (req, res) => {
     await PostBook(req, res);
 })
 
-
+routerBooks.delete('/:id', async (req, res) => {
+   await DeleteBook(req, res);
+})
