@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { BookFindAll, BookFindById } from "../repositories/books.repository.ts";
-import { DeleteBook, getBooks, PostBook } from "../controllers/books.controller.ts";
+import { DeleteBook, getBooks, PatchBook, PostBook, PutBook } from "../controllers/books.controller.ts";
 import { title } from "process";
 
 export const routerBooks = Router();
@@ -22,3 +22,11 @@ routerBooks.post('/', async (req, res) => {
 routerBooks.delete('/:id', async (req, res) => {
    await DeleteBook(req, res);
 })
+
+routerBooks.put("/:id", async (req, res) => {
+    await PutBook(req, res);
+});
+
+routerBooks.patch("/:id", async (req, res) => {
+    await PatchBook(req, res);
+});

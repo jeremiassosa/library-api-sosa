@@ -1,5 +1,6 @@
 import type { Response } from "express";
 import * as BooksRepository from "../repositories/books.repository.ts";
+import { UpdateBook } from "../types/book.ts";
 
 
 export async function getById(bookId: number, res: Response ) {
@@ -28,4 +29,9 @@ export async function remove(id: number): Promise<"DELETED" | "BOOK_NOT_FOUND" >
   await BooksRepository.BookDelete(id);
   
   return "DELETED";
+}
+
+export async function updateBook(id:number, data:UpdateBook) {
+    const book = await BooksRepository.BookUpdate(id, data);
+    return book;
 }
