@@ -4,9 +4,27 @@
 
 import { sequelize } from "./connection.js";
 import { Author, Book, Loan } from "../models/index.js";
+import { User } from "../models/Users.js";
+import bcrypt from "bcryptjs";
 
 async function seed() {
   await sequelize.sync({ force: true });
+
+
+  const passwordHashed = await bcrypt.hash("gm2dev", 10);
+  const userNameHashed = await bcrypt.hash("admin", 10);
+
+  const user = await User.bulkCreate([
+    { 
+      email: "admin@library.com", 
+      password: passwordHashed, 
+      role: "admin" 
+    },
+    {
+      email: "lector@library.com", 
+      password: userNameHashed, 
+    }
+  ]);
 
   const [cortazar, borges, ocampo, bolano] = await Author.bulkCreate([
     { name: "Julio Cortázar", nationality: "Argentina" },
