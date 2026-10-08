@@ -1,32 +1,13 @@
 import { Router } from "express";
-import { BookFindAll, BookFindById } from "../repositories/books.repository.ts";
-import { DeleteBook, getBooks, PatchBook, PostBook, PutBook } from "../controllers/books.controller.ts";
-import { title } from "process";
+import { DeleteBook, getAllBooks, getBooks, PatchBook, PostBook, PutBook } from "../controllers/books.controller.js";
+import { authenticateToken, authorizeRole } from "../middleware/user.auth.js";
 
 export const routerBooks = Router();
 
-routerBooks.get('/:id', async (req, res) => {
-    const dataBook = await getBooks(req, res);
-    res.send(dataBook)
-});
 
-routerBooks.get('/', async (req, res) => {
-    const dataBooks = await BookFindAll();
-    res.send(dataBooks);
-})
-
-routerBooks.post('/', async (req, res) => {
-    await PostBook(req, res);
-})
-
-routerBooks.delete('/:id', async (req, res) => {
-   await DeleteBook(req, res);
-})
-
-routerBooks.put("/:id", async (req, res) => {
-    await PutBook(req, res);
-});
-
-routerBooks.patch("/:id", async (req, res) => {
-    await PatchBook(req, res);
-});
+routerBooks.get("/", authenticateToken, getAllBooks);
+routerBooks.get("/:id", authenticateToken, getBooks);
+routerBooks.post("/", authenticateToken, authorizeRole("admin"), PostBook);
+routerBooks.delete("/:id", authenticateToken, authorizeRole("admin"), DeleteBook);
+routerBooks.put("/:id", authenticateToken, authorizeRole("admin"), PutBook);
+routerBooks.patch("/:id", authenticateToken, authorizeRole("admin"), PatchBook);

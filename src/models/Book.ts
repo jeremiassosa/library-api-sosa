@@ -3,9 +3,12 @@ import {
   Model,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
+  CreationOptional
 } from "sequelize";
 import { sequelize } from "../db/connection.js";
+
+
+
 
 // Tabla: books
 // ────────────

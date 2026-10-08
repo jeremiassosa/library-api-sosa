@@ -1,30 +1,63 @@
 import { Op } from "sequelize";
-import { Book as BookModel } from "../models/index.ts";
-import { Book, UpdateBook } from "../types/book.ts";
-import { promises } from "dns";
+import { Author, Book as BookModel, Loan } from "../models/index.js";
+import { Book, BookFilters, NewBook, UpdateBook } from "../types/book.js";
+import { Page, Pagination } from "../types/common.js";
 
-export async function BookFindById (id:number):Promise<Book | null> {
-    const resBook = await BookModel.findByPk(id);
-    return resBook;                                 
+export async function BookFindById(id: number): Promise<Book | null> {
+    const row = await BookModel.findByPk(id);
+    return row ? row.toJSON() as Book : null;
 }
 
-export async function BookFindAll ():Promise<Book[] | null> {
-    const resBooks = await BookModel.findAll({ where: { available: true } });
-    return resBooks;
-}
-// { where: { available: true } }
-// { where: { available: false } }r
+export async function search(filters: BookFilters, pagination: Pagination): Promise<Page<Book>> {
+    const where: Record<string, unknown> = {};
 
-export async function BookCreateFormat (titleReq:string, yearReq:number, author_idReq:number){
-    const newBook = await BookModel.create({ title: titleReq, year: yearReq, author_id: author_idReq });    
-    return (newBook);
+    if (filters.title !== undefined) {
+        where.title = { [Op.iLike]: `%${filters.title}%` };
+    }
+
+    if (filters.available !== undefined) {
+        where.available = filters.available;
+    }
+
+    if (filters.author_id !== undefined) {
+        where.author_id = filters.author_id;
+    }
+
+    const { rows, count } = await BookModel.findAndCountAll({
+        where,
+        limit: pagination.limit,
+        offset: (pagination.page - 1) * pagination.limit,
+        order: [["id", "ASC"]],
+    });
+
+    return {
+        data: rows.map((row) => row.toJSON() as Book),
+        total: count,
+        page: pagination.page,
+        limit: pagination.limit,
+    };
 }
 
-export async function BookDelete (id:number) {
-    await BookModel.destroy({ where: { id: id} });
+export async function AuthorExists(id: number): Promise<boolean> {
+    const author = await Author.findByPk(id);
+    return author !== null;
 }
 
-export async function BookUpdate (id:number, data:UpdateBook) {
+export async function BookCreateFormat(data: NewBook): Promise<Book> {
+    const row = await BookModel.create(data);
+    return row.toJSON() as Book;
+}
+
+export async function BookDelete(id: number): Promise<number> {
+    return await BookModel.destroy({ where: { id } });
+}
+
+export async function BookHasLoans(id: number): Promise<boolean> {
+    const loans = await Loan.count({ where: { book_id: id } });
+    return loans > 0;
+}
+
+export async function BookUpdate(id: number, data: UpdateBook): Promise<Book | null> {
     const book = await BookModel.findByPk(id);
 
     if (!book) {
@@ -32,6 +65,5 @@ export async function BookUpdate (id:number, data:UpdateBook) {
     }
 
     await book.update(data);
-
-    return book;
+    return book.toJSON() as Book;
 }
