@@ -24,7 +24,6 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Documentación interactiva del contrato (docs/openapi.yaml). Ya hecho.
-app.use("/docs", docsRouter);
 // 👇 Acá vas a montar tus routers:
 // app.use("/authors", authorsRoutes);
 app.use("/books", routerBooks);
@@ -49,56 +48,3 @@ start().catch((error) => {
     console.error("Error starting server:", error);
     process.exit(1);
 });
-
-// const users: {
-//     [x: string]: any; email: any; passwordHash: any; 
-// }[] = []; // a modo de ejemplo, guardamos en memoria
-//     app.use(express.json());
-//     // Registro: guarda el usuario con la contraseña hasheada
-//     app.post("/register", async (req, res) => {
-//     const { email, password } = req.body;
-//     const passwordHash = await bcrypt.hash(password, 10);
-//     users.push({ email, passwordHash });
-//     res.status(201).json({ message: "Usuario creado" });
-// });
-
-// // Login: valida credenciales y entrega un token
-// app.post("/login", async (req, res) => {
-//     const { email, password } = req.body;
-//     const user = users.find((u) => u.email === email);
-//     if (!user) return res.status(400).json({ message: "Credenciales inválidas" });
-//     const passwordOk = await bcrypt.compare(password, user.passwordHash);
-//     if (!passwordOk) return res.status(400).json({ message: "Credenciales inválidas" });
-//         const token = jwt.sign({ email, role: user.role }, process.env.JWT_SECRET, {
-//             expiresIn: "1h",
-//         });
-//     res.json({ token });
-// });
-
-// // Middleware de autenticación
-// function authenticateToken(req: { headers: { authorization: any; }; user: any; }, res: { sendStatus: (arg0: number) => any; }, next: () => void) {
-//     const authHeader = req.headers.authorization;
-//     const token = authHeader?.split(" ")[1];
-//     if (!token) return res.sendStatus(401);
-//     jwt.verify(token, process.env.JWT_SECRET, (err: any, payload: any) => {
-//     if (err) return res.sendStatus(403);
-//     req.user = payload;
-//     next();
-// });
-// }
-
-// // Middleware de autorización por rol
-// function authorizeRole(role: string) {
-//     return (req: { user: { role: any; }; }, res: { sendStatus: (arg0: number) => any; }, next: () => void) => {
-//     if (req.user.role !== role) return res.sendStatus(403);
-//     next();
-// };
-// }
-
-// // Ruta protegida: solo admins
-// app.get("/admin/dashboard", authenticateToken, authorizeRole("admin"), (req, res) => {
-//     res.json({ message: "Bienvenido al panel de admin" });
-// });
-// app.listen(3000, () => {
-//     console.log("Servidor escuchando en http://localhost:3000");
-// });
